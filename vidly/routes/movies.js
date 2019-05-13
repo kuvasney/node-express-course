@@ -1,16 +1,31 @@
 const Joi = require('joi');
 const express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router();
 
-const movies = [
-    { id: 1, "name": 'Clerks', 'genre': 'comedy' },
-    { id: 2, "name": 'Watchmen', 'genre': 'drama' },
-    { id: 3, "name": 'Rambo', 'genre': 'action' },
-    { id: 4, "name": 'South Park', 'genre': 'comedy' }
-];
+// const movies = [
+//     { id: 1, "name": 'Clerks', 'genre': 'comedy' },
+//     { id: 2, "name": 'Watchmen', 'genre': 'drama' },
+//     { id: 3, "name": 'Rambo', 'genre': 'action' },
+//     { id: 4, "name": 'South Park', 'genre': 'comedy' }
+// ];
+
+const movieSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    genre: { type: String, required: true },
+    date: { type: Date, default: Date.now },
+    isPublished: Boolean
+});
+
+const Movie = mongoose.model('Movies', movieSchema);
 
 router.get('/', (req, res) => {
-    res.send(movies)
+    async function getMovies() {
+        return await Movie
+            .find({ isPublished: true })
+            .select('name genre')
+    }
+    res.send(Movie)
 });
 
 router.get('/:id', (req, res) => {
